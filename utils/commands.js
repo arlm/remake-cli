@@ -179,7 +179,7 @@ const updateFramework = async () => {
   // 3. GIT CLONE THE ENTIRE FULL STACK STARTER PROJECT INTO THE CURRENT DIRECTORY
   spinner = ora("Copying latest framework into _remake directory.").start();
   shell.exec(
-    "git clone --depth 1 https://github.com/remake/remake-framework.git",
+    "git clone --depth 1 https://github.com/arlm/remake-framework.git",
     { silent: true }
   );
 
@@ -191,13 +191,14 @@ const updateFramework = async () => {
 
   // 5. EXTEND APP'S PACKAGE.JSON WITH FRAMEWORK'S PACKAGE.JSON
   try {
-    let packageJsonFromApp = JSON.parse(
+    var packageJsonFromApp = JSON.parse(
       fs.readFileSync(path.join(cwd, "package.json"))
     );
     let packageJsonFromFramework = JSON.parse(
       fs.readFileSync(path.join(cwd, "remake-framework/package.json"))
     );
     let keysToDeepExtend = [
+      "engines",
       "ava",
       "scripts",
       "nodemonConfig",
@@ -205,6 +206,36 @@ const updateFramework = async () => {
       "dependencies",
       "devDependencies",
     ];
+
+    let insertMapping = new Map([
+      ["engines", "main"],
+      ["ava", "engines"],
+      ["scripts", "ava"],
+      ["nodemonConfig", "scripts"],
+      ["husky", "alias"],
+      ["dependencies", "husky"],
+      ["devDependencies", "devDependencies"],
+    ]);
+
+    spinner.succeed();
+
+    insertMapping.forEach((insertAt, key, _) => {
+      if (!packageJsonFromApp.hasOwnProperty(key)) {
+        spinner = ora("Migrating package.json key '" + key + "'.").start();
+        let newPackageJsonFromApp = {};
+        for (var item in packageJsonFromApp) {
+          newPackageJsonFromApp[item] = packageJsonFromApp[item];
+          if (item === insertAt) {
+            newPackageJsonFromApp[key] = {};
+          }
+        }
+        packageJsonFromApp = newPackageJsonFromApp;
+        spinner.succeed();
+      }
+    });
+
+    spinner = ora("Updating package.json.").start();
+
     keysToDeepExtend.forEach((key) => {
       deepExtend(packageJsonFromApp[key], packageJsonFromFramework[key]);
     });
@@ -214,10 +245,16 @@ const updateFramework = async () => {
     );
   } catch (packageJsonError) {
     spinner.fail(
-      "Error with package.json: Couldn't copy dependencies from framework to app's package.json."
+      "Error with package.json: Couldn't copy dependencies from framework to app's package.json.\n" +
+        packageJsonError +
+        "\n" +
+        packageJsonError.stack
     );
     return;
   }
+
+  spinner.succeed();
+  spinner = ora("Removing temporary files.").start();
 
   rimrafError = await rimraf(path.join(cwd, "remake-framework"));
 
@@ -382,7 +419,7 @@ async function removeDotGit(projectName) {
 function cloneRemakeFramework(projectName) {
   spinner = ora("Creating new project.").start();
   shell.exec(
-    `git clone --branch master https://github.com/remake/remake-framework.git ${projectName}`,
+    `git clone --branch master https://github.com/arlm/remake-framework.git ${projectName}`,
     { silent: true }
   );
   spinner.succeed();
