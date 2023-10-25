@@ -32,19 +32,19 @@ const questions = {
     choices: [
       {
         name: "Default starter",
-        value: "https://github.com/remake/default-starter",
+        value: "https://github.com/arlm/default-starter",
       },
       {
         name: "Kanban starter",
-        value: "https://github.com/remake/kanban-starter",
+        value: "https://github.com/arlm/kanban-starter",
       },
       {
         name: "Reading list app starter",
-        value: "https://github.com/remake/reading-list-app-starter",
+        value: "https://github.com/arlm/reading-list-app-starter",
       },
       {
         name: "Resume/CV builder starter",
-        value: "https://github.com/remake/resume-builder-starter",
+        value: "https://github.com/arlm/resume-builder-starter",
       },
     ],
   },

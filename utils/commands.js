@@ -179,7 +179,7 @@ const updateFramework = async () => {
   // 3. GIT CLONE THE ENTIRE FULL STACK STARTER PROJECT INTO THE CURRENT DIRECTORY
   spinner = ora("Copying latest framework into _remake directory.").start();
   shell.exec(
-    "git clone --depth 1 https://github.com/remake/remake-framework.git",
+    "git clone --depth 1 https://github.com/arlm/remake-framework.git",
     { silent: true },
   );
 
@@ -421,7 +421,7 @@ async function removeDotGit(projectName) {
 function cloneRemakeFramework(projectName) {
   spinner = ora("Creating new project.").start();
   shell.exec(
-    `git clone --branch master https://github.com/remake/remake-framework.git ${projectName}`,
+    `git clone --branch master https://github.com/arlm/remake-framework.git ${projectName}`,
     { silent: true },
   );
   spinner.succeed();
